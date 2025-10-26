@@ -19,23 +19,34 @@ export async function POST(req: Request) {
 
     const resend = new Resend(apiKey)
 
-    // Email para você (notificação)
-    const notifyPromise = resend.emails.send({
-      from: `DEX+ <${fromEmail}>`,
-      to: [notifyEmail],
-      subject: 'Novo cadastro na lista de espera DEX+',
-      text: `Novo cadastro DEX+\n\nNome: ${nome}\nEmail: ${email}\nWhatsApp: ${whatsapp}\nContas iFood: ${quantidadeContas}`,
-    })
+    // Envia e valida respostas da API
+    const [{ error: notifyError }, { error: userError }] = await Promise.all([
+      resend.emails.send({
+        from: `DEX+ <${fromEmail}>`,
+        to: [notifyEmail],
+        subject: 'Novo cadastro na lista de espera DEX+',
+        text: `Novo cadastro DEX+\n\nNome: ${nome}\nEmail: ${email}\nWhatsApp: ${whatsapp}\nContas iFood: ${quantidadeContas}`,
+      }),
+      resend.emails.send({
+        from: `DEX+ <${fromEmail}>`,
+        to: [email],
+        subject: 'Recebemos seu cadastro na lista de espera DEX+',
+        text: `Olá ${nome.split(' ')[0]},\n\nObrigado pelo interesse no DEX+!\nRecebemos seu cadastro e em breve entraremos em contato para habilitar seu acesso antecipado.\n\nResumo do seu cadastro:\n- WhatsApp: ${whatsapp}\n- Contas iFood: ${quantidadeContas}\n\nQualquer dúvida, responda este e-mail.\n\nAbraço,\nEquipe DEX+`,
+      }),
+    ])
 
-    // Email para o usuário (confirmação)
-    const userPromise = resend.emails.send({
-      from: `DEX+ <${fromEmail}>`,
-      to: [email],
-      subject: 'Recebemos seu cadastro na lista de espera DEX+',
-      text: `Olá ${nome.split(' ')[0]},\n\nObrigado pelo interesse no DEX+!\nRecebemos seu cadastro e em breve entraremos em contato para habilitar seu acesso antecipado.\n\nResumo do seu cadastro:\n- WhatsApp: ${whatsapp}\n- Contas iFood: ${quantidadeContas}\n\nQualquer dúvida, responda este e-mail.\n\nAbraço,\nEquipe DEX+`,
-    })
-
-    await Promise.all([notifyPromise, userPromise])
+    if (notifyError || userError) {
+      return NextResponse.json(
+        {
+          error: 'Email send failed',
+          details: {
+            notify: notifyError?.message || null,
+            user: userError?.message || null,
+          },
+        },
+        { status: 502 }
+      )
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {
