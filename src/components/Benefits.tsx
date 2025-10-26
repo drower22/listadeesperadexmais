@@ -152,6 +152,38 @@ export default function Benefits() {
             ))}
           </div>
         </motion.div>
+
+        {/* CTA final */}
+        <motion.div
+          className="mt-10 flex justify-center px-2 sm:px-0"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <div className="group relative inline-flex w-full max-w-xs sm:max-w-sm lg:max-w-md">
+            <span
+              aria-hidden
+              className="absolute -inset-1 rounded-full bg-gradient-to-r from-brand-yellow-solar via-amber-300 to-brand-purple-light opacity-60 blur-lg transition duration-300 group-hover:opacity-80 group-hover:blur-xl"
+            />
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-waitlist'))}
+              className="relative flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-brand-yellow-solar via-amber-200 to-brand-yellow-solar px-8 py-4 font-sora text-base font-extrabold text-brand-purple-dark shadow-[0_20px_45px_-15px_rgba(255,213,61,0.75)] transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-brand-yellow-solar/50 sm:px-10 sm:py-5 sm:text-lg"
+            >
+              <span>Quero ser o primeiro a testar</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-purple-dark/10 text-brand-purple-dark transition-colors duration-200 group-hover:bg-brand-purple-dark/20">
+                <svg
+                  className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

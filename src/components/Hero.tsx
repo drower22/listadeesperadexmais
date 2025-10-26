@@ -1,10 +1,17 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import WaitlistModal from './WaitlistModal'
 
 export default function Hero() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Ouvir eventos globais para abrir o modal a partir de outros componentes
+  useEffect(() => {
+    const handler = () => setIsModalOpen(true)
+    window.addEventListener('open-waitlist', handler as EventListener)
+    return () => window.removeEventListener('open-waitlist', handler as EventListener)
+  }, [])
 
   return (
     <>
