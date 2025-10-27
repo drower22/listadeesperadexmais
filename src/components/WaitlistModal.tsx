@@ -36,6 +36,17 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
     })
   }
 
+  const getAffiliateRef = () => {
+    try {
+      const urlRef = new URLSearchParams(window.location.search).get('ref')
+      if (urlRef) return urlRef
+      const match = document.cookie.match(/(?:^|; )affiliate_ref=([^;]+)/)
+      return match ? decodeURIComponent(match[1]) : ''
+    } catch {
+      return ''
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -45,7 +56,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, affiliateRef: getAffiliateRef() }),
       })
 
       if (!res.ok) {
